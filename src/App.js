@@ -1,25 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [data, setData] = useState([]);
+  const [isLoading, setIsloading] = useState(false);
+ 
+  const [url, setUrl] = useState(`https://rickandmortyapi.com/api/character/`);
+  const [prev, setPrev] = useState(``);
+  const [next, setNext] = useState(``);
+
+function pagAnterior() { 
+    setUrl(prev)
+  }
+
+    function pagSiguiente() { 
+    setUrl(next)
+  }
+
+
+  useEffect(() => {
+    setIsloading(true);
+    fetch(url)
+      .then(function (results) {
+        return results.json();
+      })
+      .then(function (data) {
+        console.log(data)
+          setPrev(data.info.prev);
+         setData(data.results);
+          setNext(data.info.next);
+        setIsloading(false);
+      });
+  },[url]);
+
+ const mostrarPersonajes = data.map((personaje) => {
+    return (
+      <div>
+        <h4 key={personaje.name}>{personaje.name}</h4>;
+        <img src={personaje.image} alt =""/>;
+      </div>
+    )
+  })
+
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  } else {
+    return (
+      <div>
+        <button onClick={pagAnterior}>Página anterior</button>
+        <button onClick={pagSiguiente}>Página siguiente</button>
+       {mostrarPersonajes}
+      </div>
+
+    )
+  }
 }
 
 export default App;
+
